@@ -125,10 +125,13 @@ namespace RVO {
 		 *                             Must be non-negative.
 		 * \param      velocity        The default initial two-dimensional linear
 		 *                             velocity of a new agent (optional).
+		 * \param 	   collisionResponsibility The default value of the collision responsibility that
+		 * 									  an agent takes upon (optional, default: 1.0)
 		 */
 		RVOSimulator(float timeStep, float neighborDist, size_t maxNeighbors,
 					 float timeHorizon, float timeHorizonObst, float radius,
-					 float maxSpeed, const Vector2 &velocity = Vector2());
+					 float maxSpeed, const Vector2 &velocity = Vector2(),
+					 float collisionResponsibility = 1.0f);
 
 		/**
 		 * \brief      Destroys this simulator instance.
@@ -184,12 +187,15 @@ namespace RVO {
 		 *                             Must be non-negative.
 		 * \param      velocity        The initial two-dimensional linear velocity
 		 *                             of this agent (optional).
+		 * \param 	   collisionResponsiblity The collision avoidance responsibility that an 
+		 * 									  agent takes upon (optional, default: 0.5)
 		 * \return     The number of the agent.
 		 */
 		size_t addAgent(const Vector2 &position, float neighborDist,
 						size_t maxNeighbors, float timeHorizon,
 						float timeHorizonObst, float radius, float maxSpeed,
-						const Vector2 &velocity = Vector2());
+						const Vector2 &velocity = Vector2(), 
+						float collisionResponsibility = 0.5f);
 
 		/**
 		 * \brief      Adds a new obstacle to the simulation.
@@ -476,11 +482,14 @@ namespace RVO {
 		 *                             Must be non-negative.
 		 * \param      velocity        The default initial two-dimensional linear
 		 *                             velocity of a new agent (optional).
+		 * \param 	   collisionResponsibility The collision avoidance responsibility that an 
+		 * 									  agent takes upon (optional, default: 0.5)
 		 */
 		void setAgentDefaults(float neighborDist, size_t maxNeighbors,
 							  float timeHorizon, float timeHorizonObst,
 							  float radius, float maxSpeed,
-							  const Vector2 &velocity = Vector2());
+							  const Vector2 &velocity = Vector2(), 
+							  float collisionResponsibility = 0.5f);
 
 		/**
 		 * \brief      Sets the maximum neighbor count of a specified agent.

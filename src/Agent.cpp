@@ -306,6 +306,11 @@ namespace RVO {
 
 				const float dotProduct1 = w * relativePosition;
 
+				// TODO: Understand this condition
+				// If the dot product is less than zero, we can be sure that we need to project on the legs
+				// There is another condition to be checked to see if we have to project on the circle
+				// It checks whether the angle between w and the relative position vector is less than that between the relative position vector and 
+				// the tangent to the circle from the origin
 				if (dotProduct1 < 0.0f && sqr(dotProduct1) > combinedRadiusSq * wLengthSq) {
 					/* Project on cut-off circle. */
 					const float wLength = std::sqrt(wLengthSq);
@@ -346,11 +351,13 @@ namespace RVO {
 				u = (combinedRadius * invTimeStep - wLength) * unitW;
 			}
 
-			line.point = velocity_ + 0.5f * u;
+			//line.point = velocity_ + 0.5f * u;
+			line.point = velocity_ + collision_responsibility_ * u;
 			orcaLines_.push_back(line);
 		}
 
 		size_t lineFail = linearProgram2(orcaLines_, maxSpeed_, prefVelocity_, false, newVelocity_);
+		// size_t lineFail = linearProgram2(orcaLines_, maxSpeed_, velocity_, false, newVelocity_);
 
 		if (lineFail < orcaLines_.size()) {
 			linearProgram3(orcaLines_, numObstLines, lineFail, maxSpeed_, newVelocity_);
@@ -419,6 +426,7 @@ namespace RVO {
 			return false;
 		}
 
+		// Minimum distance from the ORCA line to the origin
 		const float sqrtDiscriminant = std::sqrt(discriminant);
 		float tLeft = -dotProduct - sqrtDiscriminant;
 		float tRight = -dotProduct + sqrtDiscriminant;

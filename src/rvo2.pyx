@@ -26,12 +26,13 @@ cdef extern from "RVOSimulator.h" namespace "RVO":
         RVOSimulator()
         RVOSimulator(float timeStep, float neighborDist, size_t maxNeighbors,
                      float timeHorizon, float timeHorizonObst, float radius,
-                     float maxSpeed, const Vector2 & velocity)
+                     float maxSpeed, const Vector2 & velocity, 
+                     float collisionResponsibility)
         size_t addAgent(const Vector2 & position)
         size_t addAgent(const Vector2 & position, float neighborDist,
                         size_t maxNeighbors, float timeHorizon,
                         float timeHorizonObst, float radius, float maxSpeed,
-                        const Vector2 & velocity)
+                        const Vector2 & velocity, float collisionResponsibility)
         size_t addObstacle(const vector[Vector2] & vertices)
         void doStep() nogil
         size_t getAgentAgentNeighbor(size_t agentNo, size_t neighborNo) const
@@ -62,7 +63,8 @@ cdef extern from "RVOSimulator.h" namespace "RVO":
         void setAgentDefaults(float neighborDist, size_t maxNeighbors,
                               float timeHorizon, float timeHorizonObst,
                               float radius, float maxSpeed,
-                              const Vector2 & velocity)
+                              const Vector2 & velocity, 
+                              float collisionResponsibility)
         void setAgentMaxNeighbors(size_t agentNo, size_t maxNeighbors)
         void setAgentMaxSpeed(size_t agentNo, float maxSpeed)
         void setAgentNeighborDist(size_t agentNo, float neighborDist)
@@ -80,12 +82,13 @@ cdef class PyRVOSimulator:
 
     def __cinit__(self, float timeStep, float neighborDist, size_t maxNeighbors,
                   float timeHorizon, float timeHorizonObst, float radius,
-                  float maxSpeed, tuple velocity=(0, 0)):
+                  float maxSpeed, tuple velocity=(0, 0), 
+                  float collisionResponsibility=0.5):
         cdef Vector2 c_velocity = Vector2(velocity[0], velocity[1])
 
         self.thisptr = new RVOSimulator(timeStep, neighborDist, maxNeighbors,
                                         timeHorizon, timeHorizonObst, radius,
-                                        maxSpeed, c_velocity)
+                                        maxSpeed, c_velocity, collisionResponsibility)
 
     def __dealloc__(self):
         del self.thisptr
@@ -93,7 +96,7 @@ cdef class PyRVOSimulator:
     def addAgent(self, tuple pos, neighborDist=None,
                  maxNeighbors=None, timeHorizon=None,
                  timeHorizonObst=None, radius=None, maxSpeed=None,
-                 velocity=None):
+                 velocity=None, collisionResponsibility=None):
         cdef Vector2 c_pos = Vector2(pos[0], pos[1])
         cdef Vector2 c_velocity
 
@@ -107,7 +110,7 @@ cdef class PyRVOSimulator:
             agent_nr = self.thisptr.addAgent(c_pos, neighborDist,
                                              maxNeighbors, timeHorizon,
                                              timeHorizonObst, radius, maxSpeed,
-                                             c_velocity)
+                                             c_velocity, collisionResponsibility)
 
         if agent_nr == RVO_ERROR:
             raise RuntimeError('Error adding agent to RVO simulation')
@@ -195,10 +198,10 @@ cdef class PyRVOSimulator:
 
     def setAgentDefaults(self, float neighbor_dist, size_t max_neighbors, float time_horizon,
                          float time_horizon_obst, float radius, float max_speed,
-                         tuple velocity=(0, 0)):
+                         tuple velocity=(0, 0), float collisionResponsibility=0.5):
         cdef Vector2 c_velocity = Vector2(velocity[0], velocity[1])
         self.thisptr.setAgentDefaults(neighbor_dist, max_neighbors, time_horizon,
-                                      time_horizon_obst, radius, max_speed, c_velocity)
+                                      time_horizon_obst, radius, max_speed, c_velocity, collisionResponsibility)
 
     def setAgentMaxNeighbors(self, size_t agent_no, size_t max_neighbors):
         self.thisptr.setAgentMaxNeighbors(agent_no, max_neighbors)
